@@ -1,0 +1,67 @@
+qfunc load_b(amplitudes: real[], output state: qbit[], bound: real) {
+  prepare_amplitudes(amplitudes, bound, state);
+}
+
+qfunc simple_eig_inv(phase: qnum, output indicator: qbit) {
+  allocate(1, indicator);
+  indicator *= (1 / (2 ** phase.size)) / phase;
+}
+
+qfunc hhl(rhs_vector: real[], bound: real, precision: int, hamiltonian_evolution_with_power: qfunc (int, qbit[]), output state: qbit[], output phase: qnum, output indicator: qbit) {
+  allocate_num(precision, False, precision, phase);
+  load_b([
+    0.18257418583505536,
+    0.3651483716701107,
+    0.7302967433402214,
+    0.5477225575051661
+  ], state, bound);
+  within {
+    qpe_flexible(lambda(k) {
+      hamiltonian_evolution_with_power(k, state);
+    }, phase);
+  } apply {
+    simple_eig_inv(phase, indicator);
+  }
+}
+
+qfunc unitary_with_power_logic(pw: int, matrix: real[][], target: qbit[]) {
+  power (pw) {
+    unitary(matrix, target);
+  }
+}
+
+qfunc main(output res: qnum, output phase: qnum, output indicator: qbit) {
+  hhl([
+    0.18257418583505536,
+    0.3651483716701107,
+    0.7302967433402214,
+    0.5477225575051661
+  ], 0, 4, lambda(arg0, arg1) {
+    unitary_with_power_logic(arg0, [
+      [
+        ((-0.09406240950199855) + 0.8149069223122056j),
+        (0.03521871946675125 - 0.029763534641642626j),
+        ((-0.018800717000078307) - 0.16142879795007103j),
+        (0.4376924593076474 + 0.32705554908759304j)
+      ],
+      [
+        (0.03521871946675127 - 0.029763534641642633j),
+        ((-0.15347248298890323) - 0.1727528247294824j),
+        (0.23117644455908545 + 0.8872069971297388j),
+        (0.2397182575488357 + 0.21548267921288924j)
+      ],
+      [
+        ((-0.018800717000078276) - 0.16142879795007103j),
+        (0.23117644455908537 + 0.8872069971297386j),
+        ((-0.12191317205164585) + 0.13200138126428376j),
+        (0.2958406910149558 + 0.11488938733473104j)
+      ],
+      [
+        (0.43769245930764744 + 0.3270555490875932j),
+        (0.23971825754883574 + 0.21548267921288933j),
+        (0.2958406910149558 + 0.114889387334731j),
+        ((-0.6563827949579104) + 0.25690988991104674j)
+      ]
+    ], arg1);
+  }, res, phase, indicator);
+}

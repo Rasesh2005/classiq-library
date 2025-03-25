@@ -1,41 +1,85 @@
-qfunc qmci<space_transform: qfunc (arg0: qbit[], arg1: qbit)>(phase: qnum, packed_vars: qbit[]) {
-  amplitude_estimation<lambda(reg) {
-    Z(reg[reg.len - 1]);
-  }, lambda(reg) {
-    space_transform(reg[0:reg.len - 1], reg[reg.len - 1]);
-  }>(phase, packed_vars);
+qstruct OptionPricingState {
+  asset: qnum<5, False, 0>;
+  ind: qbit;
 }
 
-qfunc main(output phase_port: qbit[2]) {
-  unitary_port: qbit[];
-  allocate<6>(unitary_port);
-  allocate_num<2, False, 2>(phase_port);
-  qmci<lambda(arg0, arg1) {
-    log_normal_finance<LogNormalModel {
-      num_qubits=5,
-      mu=0.7,
-      sigma=0.13
-    }, FinanceFunction {
-      f=FinanceFunctionType::EUROPEAN_CALL_OPTION,
-      threshold=1.9,
-      larger=True,
-      polynomial_degree=0,
-      use_chebyshev_polynomial_approximation=False,
-      tail_probability=0.0
-    }>(arg0, arg1);
-  }>(phase_port, unitary_port);
+qfunc iqae_algorithm(k: int, oracle_operand: qfunc (qbit[]), sp_operand: qfunc (qbit[]), x: qbit[]) {
+  sp_operand(x);
+  power (k) {
+    grover_operator(oracle_operand, sp_operand, x);
+  }
+}
+
+qfunc iqae_oracle(state: OptionPricingState) {
+  Z(state.ind);
+}
+
+qfunc load_distribution(asset: qnum) {
+  inplace_prepare_state([
+    0.0001096665,
+    0.000325131,
+    0.0008423406,
+    0.0019330863,
+    0.0039764136,
+    0.0074083288,
+    0.0126157287,
+    0.019796302,
+    0.0288308524,
+    0.0392206066,
+    0.0501234708,
+    0.0604877711,
+    0.0692466213,
+    0.0755165222,
+    0.0787466388,
+    0.0787861125,
+    0.0758647471,
+    0.0705062166,
+    0.0634057464,
+    0.0553049808,
+    0.046888762,
+    0.0387167866,
+    0.0311920107,
+    0.0245598482,
+    0.0189284118,
+    0.0142996499,
+    0.0106030118,
+    0.0077259727,
+    0.0055384217,
+    0.0039100417,
+    0.0027212013,
+    0.0018685977
+  ], 0, asset);
+}
+
+qfunc payoff_linear(asset: qnum, ind: qbit) {
+  ind *= sqrt(abs((((asset * 0.0513152339) + 1.2354548887) - 1.9) / 0.9262271399));
+}
+
+qfunc payoff(asset: qnum, ind: qbit) {
+  aux: qbit;
+  within {
+    aux = asset >= ceiling(12.9502500662);
+  } apply {
+    control (aux) {
+      payoff_linear(asset, ind);
+    }
+  }
+}
+
+qfunc european_call_state_preparation(state: OptionPricingState) {
+  load_distribution(state.asset);
+  payoff(state.asset, state.ind);
+}
+
+qfunc main(k: int, output ind: qbit) {
+  state: OptionPricingState;
+  asset: qbit[];
+  allocate(state.size, state);
+  iqae_algorithm(k, iqae_oracle, european_call_state_preparation, state);
+  state -> {asset, ind};
 }
 
 cscope ```
-phase_port_size = 2
-counts = sample()
-save({"counts": counts})
-probability_estimation = qae_with_qpe_result_post_processing(
-    estimation_register_size=phase_port_size,
-    estimation_method=1,
-    result=counts
-)
-save({"probability_estimation": probability_estimation})
-payoff_estimation = log_normal_finance_post_process(struct_literal(LogNormalModel, num_qubits=5, mu=0.7, sigma=0.13), struct_literal(FinanceFunction, f=FinanceFunctionType.EUROPEAN_CALL_OPTION, threshold=1.9, larger=True, polynomial_degree=0, use_chebyshev_polynomial_approximation=False, tail_probability=0.0), probability_estimation)
-save({"payoff_estimation": payoff_estimation})
+iqae_res = iqae(epsilon=0.05, alpha=0.01)
+save({'iqae_res': iqae_res})
 ```

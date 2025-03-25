@@ -1,15 +1,17 @@
+[![License](https://img.shields.io/github/license/Classiq/classiq-library)](https://opensource.org/license/mit)
 [![Version](https://badge.fury.io/py/classiq.svg)](https://badge.fury.io/py/classiq)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/classiq)
+[![Downloads](https://img.shields.io/pypi/dm/classiq.svg)](https://pypi.org/project/classiq/)
 
 <div align="center">
     <img src="README_resources/classiq-logo.svg" width="300" height="150">
 </div>
 
-# Classiq
+# Classiq: High-Level Quantum Modeling Language
 
-Your entry-point for creating & running quantum programs.
+Classiq provides a powerful platform for **designing, optimizing, analyzing, and executing** quantum programs. This repository hosts a comprehensive collection of quantum functions, algorithms, applications, and tutorials built using the Classiq SDK and our native Qmod language.
 
-This repository holds a wide collection of quantum functions, algorithms, applications and tutorials built with Classiq.
+Whether you're a researcher, developer, or student, Classiq helps you simplify complex quantum workflows and seamlessly transform quantum logic into optimized circuits by leveraging our **high-level functional design** approach. A user-friendly interface allows you to model, simulate, visualize, and execute quantum programs across various quantum hardware platforms.
 
 <hr> <br>
 
@@ -32,7 +34,7 @@ This repository holds a wide collection of quantum functions, algorithms, applic
 Working with Classiq's latest GUI requires no installations!
 Just head over to [Classiq's platform](https://platform.classiq.io/) and follow the examples below over there :)
 
-If you'd rather work programmatically, using Python, Classiq also provides an SDK, which can be installed as follows:
+If you'd rather work programmatically using Python, Classiq also provides an SDK, which can be installed as follows:
 
 ```bash
 pip install classiq
@@ -51,9 +53,9 @@ The `.ipynb` files are intended to be viewed inside [JupyterLab](https://jupyter
 
 # Create Quantum Programs with Classiq
 
-The simplest quantum circuit has 1 qubit, and has a single `X` gate.
+The simplest quantum circuit has 1 qubit and has a single `X` gate.
 
-Using Classiq's SDK, it would like like so:
+Using Classiq's SDK, it would look like this:
 
 ```python
 from classiq import *
@@ -74,7 +76,7 @@ show(quantum_program)
 
 result = execute(quantum_program).result()
 print(result[0].value.parsed_counts)
-# [{'res': 1.0}: 1000]
+# [{'res': 1}: 1000]
 ```
 
 Let's unravel the code above:
@@ -95,13 +97,13 @@ def main(res: Output[QBit]):
     X(res)
 ```
 
-The 1st line states that the function will be a quantum one. [Further documentation](https://docs.classiq.io/latest/reference-manual/platform/qmod/language-reference/functions/).
+The 1st line states that the function will be a quantum one. [Further documentation](https://docs.classiq.io/latest/qmod-reference/language-reference/functions/).
 
-The 2nd line defines the type of the output. [Further examples on types](https://docs.classiq.io/latest/reference-manual/platform/qmod/language-reference/classical-types/)
+The 2nd line defines the type of the output. [Further examples on types](https://docs.classiq.io/latest/qmod-reference/language-reference/classical-types/)
 
-The 3rd line allocates several qubits (in this example, only 1) in this quantum variable. [Further details on allocate](https://docs.classiq.io/latest/reference-manual/platform/qmod/language-reference/quantum-variables/)
+The 3rd line allocates several qubits (in this example, only 1) in this quantum variable. [Further details on allocate](https://docs.classiq.io/latest/qmod-reference/language-reference/quantum-variables/)
 
-The 4th line applies an `X` operator on the quantum variable. [Further details on quantum operators](https://docs.classiq.io/latest/reference-manual/platform/qmod/language-reference/operators/)
+The 4th line applies an `X` operator on the quantum variable. [Further details on quantum operators](https://docs.classiq.io/latest/qmod-reference/language-reference/operators/)
 
 ### More Examples
 
@@ -115,7 +117,7 @@ def prep_minus(out: Output[QBit]) -> None:
     H(out)
 ```
 
-A part of the Deutsch Jozsa algorithm (see the full algorithm [here](/algorithms/deutsch_josza/deutsch_jozsa.ipynb))
+A part of the Deutsch Jozsa algorithm (see the full algorithm [here](/algorithms/deutsch_jozsa/deutsch_jozsa.ipynb))
 
 ```python
 @qfunc
@@ -168,9 +170,9 @@ Classiq provides an easy-to-use way to execute quantum programs, and provides va
 flowchart
     IDEInput[<a href='https://platform.classiq.io/'>Classiq IDE</a>]
 
-    SDKInput[<a href='https://docs.classiq.io/latest/reference-manual/python-sdk/'>Classiq python SDK</a>]
+    SDKInput[<a href='https://docs.classiq.io/latest/sdk-reference/'>Classiq python SDK</a>]
 
-    Model[<a href='https://docs.classiq.io/latest/reference-manual/platform/qmod/'>Quantum Model</a>]
+    Model[<a href='https://docs.classiq.io/latest/qmod-reference/'>Quantum Model</a>]
 
     Synthesis[<a href='https://docs.classiq.io/latest/classiq_101/classiq_concepts/optimize/'>Synthesis Engine</a>]
 
@@ -258,7 +260,7 @@ print(result[0].value.parsed_counts)
 
 The examples found in this repository can be accessed via [Classiq's platform](https://platform.classiq.io/), in the [`model`](https://platform.classiq.io/dsl-synthesis) tab, under the same folder structure.
 
-Additionally, one may write his own model in the model editor (highlighted in green) or upload his own model (highlighted in red)
+Additionally, one may write their own model in the model editor (highlighted in green) or upload his own model (highlighted in red)
 
 ![writing_models.png](README_resources/writing_models.png)
 
@@ -302,14 +304,14 @@ qfunc main(output res: qnum){
 
 </center>
 
-3. Press Run:
+4. Press Run:
 <center>
 
 ![Execution_Screenshot_3_plus_5.png](README_resources/Execution_Screenshot_3_plus_5.png)
 
 </center>
 
-4. View Results:
+5. View Results:
 <center>
 
 ![Jobs_Screenshot_3_plus_5.png](README_resources/Jobs_Screenshot_3_plus_5.png)
